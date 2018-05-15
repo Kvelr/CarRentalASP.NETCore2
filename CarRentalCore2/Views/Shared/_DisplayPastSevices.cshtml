@@ -1,0 +1,59 @@
+﻿@model CarRentalCore2.ViewModel.CarAndServicesViewModel
+@using CarRentalCore2.Utility
+<table class="table table-condensed table-hover">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(m => m.PastServices.FirstOrDefault().Miles)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.PastServices.FirstOrDefault().Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.PastServices.FirstOrDefault().Details)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.PastServices.FirstOrDefault().DateAdded)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m => m.PastServices.FirstOrDefault().ServiceType.Name)
+        </th>
+        <th>
+
+        </th>
+    </tr>
+
+    @foreach (var service in Model.PastServices)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(m => service.Miles)
+            </td>
+            <td>
+                @Html.DisplayFor(m => service.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(m => service.Details)
+            </td>
+            <td>
+                @Html.DisplayFor(m => service.DateAdded)
+            </td>
+            <td>
+                @Html.DisplayFor(m => service.ServiceType.Name)
+            </td>
+            <td>
+                @if (service.DateAdded.Date == DateTime.Now.Date && User.IsInRole(SD.AdminEndUser))
+                {
+                    @Html.Partial("_IndvidualButtonPartial",
+                        new IndvidualButtonPartial
+                        {
+                            Action = "Delete",
+                            ButtonType="btn-danger",
+                            Glyph = "trash",
+                            Text = "Delete Button",
+                            ServiceID = service.Id
+                        })
+                }
+            </td>
+        </tr>
+    }
+</table>

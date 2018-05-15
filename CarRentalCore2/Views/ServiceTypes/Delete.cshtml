@@ -1,0 +1,29 @@
+﻿@model CarRentalCore2.Models.ServiceType
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<br />
+<h2>Delete Service Type</h2>
+<hr />
+
+<form method="post" asp-action="Delete">
+    <div class="form-border">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-1">
+                    <label asp-for="Name" class="custom-label" /></label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" asp-for="Name" disabled class="form-control" />
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="submit" value="Delete" class="btn btn-sm btn-danger" />
+            <a asp-action="Index" class="btn btn-sm btn-success">Back to list</a>
+        </div>
+    </div>
+</form>

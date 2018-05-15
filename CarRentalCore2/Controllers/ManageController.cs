@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using CarRentalCore2.Models;
 using CarRentalCore2.Models.ManageViewModels;
 using CarRentalCore2.Services;
+using CarRentalCore2.Data;
 
 namespace CarRentalCore2.Controllers
 {
@@ -20,11 +21,17 @@ namespace CarRentalCore2.Controllers
     [Route("[controller]/[action]")]
     public class ManageController : Controller
     {
+        //public ManageController(ApplicationDbContext dbContext)
+        //{
+        //    _dbContext = dbContext;
+        //}
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
+        private readonly ApplicationDbContext _dbContext;
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
         private const string RecoveryCodesKey = nameof(RecoveryCodesKey);
@@ -34,13 +41,15 @@ namespace CarRentalCore2.Controllers
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+          UrlEncoder urlEncoder,
+          ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
+            _dbContext = dbContext;
         }
 
         [TempData]
@@ -61,7 +70,12 @@ namespace CarRentalCore2.Controllers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 IsEmailConfirmed = user.EmailConfirmed,
-                StatusMessage = StatusMessage
+                StatusMessage = StatusMessage,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Address = user.Address,
+                City = user.City,
+                PostalCode = user.PostalCode
             };
 
             return View(model);
@@ -82,25 +96,17 @@ namespace CarRentalCore2.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var email = user.Email;
-            if (model.Email != email)
-            {
-                var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
-                if (!setEmailResult.Succeeded)
-                {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
-                }
-            }
 
-            var phoneNumber = user.PhoneNumber;
-            if (model.PhoneNumber != phoneNumber)
-            {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
-                {
-                    throw new ApplicationException($"Unexpected error occurred setting phone number for user with ID '{user.Id}'.");
-                }
-            }
+
+            var userInDb = _dbContext.Users.FirstOrDefault(u => u.Email.Equals(model.Email));
+            userInDb.FirstName = user.FirstName;
+            userInDb.LastName = user.LastName;
+            userInDb.Address = user.Address;
+            userInDb.City = user.City;
+            userInDb.PostalCode = user.PostalCode;
+            userInDb.PhoneNumber = user.PhoneNumber;
+
+            await _dbContext.SaveChangesAsync();
 
             StatusMessage = "Your profile has been updated";
             return RedirectToAction(nameof(Index));

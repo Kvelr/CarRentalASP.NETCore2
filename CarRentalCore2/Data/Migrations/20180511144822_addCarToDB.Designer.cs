@@ -11,9 +11,10 @@ using System;
 namespace CarRentalCore2.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180511144822_addCarToDB")]
+    partial class addCarToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -88,20 +89,17 @@ namespace CarRentalCore2.Data.Migrations
 
                     b.Property<string>("Color");
 
-                    b.Property<string>("Make")
-                        .IsRequired();
+                    b.Property<string>("Make");
 
                     b.Property<double>("Miles");
 
-                    b.Property<string>("Model")
-                        .IsRequired();
+                    b.Property<string>("Model");
 
                     b.Property<string>("Style");
 
                     b.Property<string>("UserId");
 
-                    b.Property<string>("Vin")
-                        .IsRequired();
+                    b.Property<string>("Vin");
 
                     b.Property<int>("Year");
 
@@ -110,32 +108,6 @@ namespace CarRentalCore2.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Cars");
-                });
-
-            modelBuilder.Entity("CarRentalCore2.Models.Service", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("DateAdded");
-
-                    b.Property<string>("Details");
-
-                    b.Property<double>("Miles");
-
-                    b.Property<double>("Price");
-
-                    b.Property<int>("ServiceTypeId");
-
-                    b.Property<int>("carId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceTypeId");
-
-                    b.HasIndex("carId");
-
-                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("CarRentalCore2.Models.ServiceType", b =>
@@ -264,19 +236,6 @@ namespace CarRentalCore2.Data.Migrations
                     b.HasOne("CarRentalCore2.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("CarRentalCore2.Models.Service", b =>
-                {
-                    b.HasOne("CarRentalCore2.Models.ServiceType", "ServiceType")
-                        .WithMany()
-                        .HasForeignKey("ServiceTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("CarRentalCore2.Models.Car", "Car")
-                        .WithMany()
-                        .HasForeignKey("carId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
